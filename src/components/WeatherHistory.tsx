@@ -40,7 +40,6 @@ const WeatherHistory: React.FC<Props> = ({ latitude, longitude }) => {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
         
-        // Generate realistic UV index (0-12)
         // Higher in summer months (northern hemisphere)
         const month = date.getMonth();
         let baseUV = 3; // Base UV level

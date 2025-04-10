@@ -10,7 +10,7 @@ const Logo: React.FC = () => {
       />
       <div className="ml-4">
         <h1 className="text-2xl font-bold text-primary">Miale AI</h1>
-        <p className="text-sm text-muted-foreground">Intelligent Visual Assistant</p>
+        <p className="text-sm text-muted-foreground">Intelligent Off-Grid Virtual Assistant</p>
       </div>
     </div>
   );
