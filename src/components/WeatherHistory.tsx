@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -98,11 +97,11 @@ const WeatherHistory: React.FC<Props> = ({ latitude, longitude }) => {
       </div>
 
       {isLoading ? (
-        <div className="h-64 w-full flex items-center justify-center">
+        <div className="h-100 w-full flex items-center justify-center"> {/* Increased height */}
           <div className="text-muted-foreground">Loading weather data...</div>
         </div>
       ) : (
-        <div className="h-64">
+        <div className="h-100 w-full"> {/* Increased height */}
           <ChartContainer config={config}>
             <>
               <ResponsiveContainer width="100%" height="100%">

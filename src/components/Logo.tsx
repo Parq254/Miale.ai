@@ -4,7 +4,7 @@ const Logo: React.FC = () => {
   return (
     <div className="flex items-center py-4">
       <img
-        src="/public/lovable-uploads/Miale_AI-logo.png"
+        src="/lovable-uploads/Miale_AI-logo.png"
         alt="Miale AI Logo"
         className="w-16 h-16" // Increased size
       />

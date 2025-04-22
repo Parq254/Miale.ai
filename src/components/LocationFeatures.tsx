@@ -1,18 +1,28 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LocationTracker from './LocationTracker';
 import WeatherHistory from './WeatherHistory';
 import TechnicianFinder from './TechnicianFinder';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 
-const LocationFeatures: React.FC = () => {
+type LocationFeaturesProps = {
+  onLocationUpdate: (latitude: number, longitude: number) => void;
+};
+
+const LocationFeatures: React.FC<LocationFeaturesProps> = ({ onLocationUpdate }) => {
   const [location, setLocation] = useState<{ latitude?: number; longitude?: number }>({});
 
-  // This function will be called when location is updated in the LocationTracker component
   const handleLocationUpdate = (lat: number, lng: number) => {
     setLocation({ latitude: lat, longitude: lng });
+    onLocationUpdate(lat, lng); // Pass the updated location to the parent
   };
+
+  useEffect(() => {
+    const latitude = -1.286389; // Example latitude
+    const longitude = 36.817223; // Example longitude
+    setLocation({ latitude, longitude });
+    onLocationUpdate(latitude, longitude);
+  }, [onLocationUpdate]);
 
   return (
     <Card className="p-4 shadow-sm border">
