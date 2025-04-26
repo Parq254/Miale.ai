@@ -11,7 +11,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ latitude, longitude }) => {
 
   useEffect(() => {
     if (map && latitude && longitude) {
-      map.setView([latitude, longitude], 15); // Zoom level 15 for precise location
+      map.setView([latitude, longitude], 15); // Center the map
       map.invalidateSize(); // Force the map to recalculate its size
     }
   }, [latitude, longitude, map]);

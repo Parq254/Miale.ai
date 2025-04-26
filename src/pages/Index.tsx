@@ -9,9 +9,10 @@ import Logo from '@/components/Logo';
 import LocationFeatures from '@/components/LocationFeatures';
 import AuthSection from '../components/AuthSection';
 import MapComponent from '../components/MapComponent';
+import axios from 'axios';
 
 const Index: React.FC = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<{ id: number; type: 'user' | 'ai'; content: string }[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Track authentication status
   const [latitude, setLatitude] = useState<number>(-1.286389); // Default latitude (Nairobi)
   const [longitude, setLongitude] = useState<number>(36.817223); // Default longitude (Nairobi)
@@ -32,6 +33,31 @@ const Index: React.FC = () => {
     setLongitude(lng);
   };
 
+  const handleSendMessage = async (content: string) => {
+    // user's message
+    setMessages((prev) => [...prev, { id: Date.now(), type: 'user', content }]);
+
+    try {
+      // Call the Miale agent API
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: 'gpt-4',
+        messages: [{ role: 'user', content }],
+      }, {
+        headers: {
+          'Authorization': `Bearer YOUR_OPENAI_API_KEY`, // Replace with your OpenAI API key
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Add Miale's response to the chat
+      const aiMessage = response.data.choices[0].message.content;
+      setMessages((prev) => [...prev, { id: Date.now(), type: 'ai', content: aiMessage }]);
+    } catch (error) {
+      console.error('Error communicating with AI:', error);
+      setMessages((prev) => [...prev, { id: Date.now(), type: 'ai', content: 'Sorry, something went wrong. Please try again.' }]);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <div className="container flex flex-col py-4">
@@ -41,7 +67,7 @@ const Index: React.FC = () => {
         <h1 className="text-3xl font-bold mb-6">Welcome to Miale AI</h1>
       </div>
 
-      {/* Conditional Rendering for Auth or Chat */}
+      {/* Chat Section */}
       <div className="container mb-6">
         {!isAuthenticated ? (
           <AuthSection
@@ -67,9 +93,7 @@ const Index: React.FC = () => {
               )}
               <div className="mt-4">
                 <ChatInput
-                  onSendMessage={(content) => {
-                    setMessages((prev) => [...prev, { id: Date.now(), type: 'user', content }]);
-                  }}
+                  onSendMessage={handleSendMessage}
                   onSendImage={(imageUrl, analysis) => {
                     setMessages((prev) => [
                       ...prev,

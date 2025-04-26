@@ -1,158 +1,67 @@
+import React, { useState } from 'react';
+import { submitQuery } from '@/lib/apiService';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
-import ImageRecognition from './ImageRecognition';
-import voiceRecognitionService from '@/utils/voiceRecognition';
-
-type ChatInputProps = {
-  onSendMessage: (text: string) => void;
-  onSendImage: (imageUrl: string, analysis: string) => void;
-};
-
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onSendImage }) => {
+const ChatInput: React.FC = () => {
   const [inputText, setInputText] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [interimTranscript, setInterimTranscript] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { toast } = useToast();
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Auto resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [inputText]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputText.trim()) {
-      onSendMessage(inputText.trim());
-      setInputText('');
+    if (!inputText.trim()) return;
+
+    setIsLoading(true);
+
+    try {
+      // Call the backend API to submit the query
+      const data = await submitQuery(inputText, chatHistory);
+
+      // Update the chat history
+      setChatHistory((prev) => [
+        ...prev,
+        { user: inputText, assistant: data.output },
+      ]);
+
+      setInputText(''); // Clear the input field
+    } catch (error) {
+      console.error('Error submitting query:', error);
+      setChatHistory((prev) => [
+        ...prev,
+        { user: inputText, assistant: 'Failed to get a response. Please try again.' },
+      ]);
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  const toggleVoiceRecognition = () => {
-    if (isRecording) {
-      voiceRecognitionService.stop();
-      setIsRecording(false);
-      setInterimTranscript('');
-    } else {
-      const success = voiceRecognitionService.start({
-        onResult: (transcript, isFinal) => {
-          if (isFinal) {
-            setInputText(prev => `${prev}${transcript} `);
-            setInterimTranscript('');
-          } else {
-            setInterimTranscript(transcript);
-          }
-        },
-        onError: (error) => {
-          toast({
-            title: "Speech Recognition Error",
-            description: error,
-            variant: "destructive",
-          });
-          setIsRecording(false);
-        }
-      });
-      
-      if (success) {
-        setIsRecording(true);
-        toast({
-          title: "Listening...",
-          description: "Start speaking now",
-        });
-      }
-    }
-  };
-
-  const handleImageProcessed = (imageUrl: string, analysis: string) => {
-    onSendImage(imageUrl, analysis);
-  };
-
-  const handleImageError = (error: string) => {
-    toast({
-      title: "Image Processing Error",
-      description: error,
-      variant: "destructive",
-    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full">
-      <div className="relative">
-        <Textarea
-          ref={textareaRef}
+    <div className="p-4">
+      <div className="chat-history mb-4 p-4 border rounded h-64 overflow-y-auto bg-gray-100">
+        {chatHistory.map((entry, index) => (
+          <div key={index} className="mb-4">
+            <div className="text-blue-600 font-semibold">User:</div>
+            <div className="bg-white p-2 rounded shadow mb-2">{entry.user}</div>
+            <div className="text-green-600 font-semibold">Assistant:</div>
+            <div className="bg-white p-2 rounded shadow">{entry.assistant}</div>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col">
+        <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="Type a message..."
-          className="pr-24 min-h-[60px] max-h-[200px] resize-none overflow-y-auto"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit(e);
-            }
-          }}
+          placeholder="Type your query..."
+          className="w-full p-2 border rounded mb-4"
         />
-        
-        {interimTranscript && (
-          <div className="absolute inset-x-0 -top-8 bg-muted/40 p-1.5 rounded text-sm text-muted-foreground animate-pulse-subtle">
-            {interimTranscript}...
-          </div>
-        )}
-        
-        <div className="absolute right-2 bottom-2 flex items-center gap-2">
-          <ImageRecognition 
-            onImageProcessed={handleImageProcessed}
-            onError={handleImageError}
-          />
-          
-          <Button
-            type="button"
-            size="icon"
-            variant={isRecording ? "destructive" : "secondary"}
-            onClick={toggleVoiceRecognition}
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="18" 
-              height="18" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-              className={isRecording ? "animate-pulse" : ""}
-            >
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-              <line x1="12" x2="12" y1="19" y2="22" />
-            </svg>
-          </Button>
-          
-          <Button type="submit" size="icon" disabled={!inputText.trim()}>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="18" 
-              height="18" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="m22 2-7 20-4-9-9-4Z" />
-              <path d="M22 2 11 13" />
-            </svg>
-          </Button>
-        </div>
-      </div>
-    </form>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Sending...' : 'Send'}
+        </button>
+      </form>
+    </div>
   );
 };
 

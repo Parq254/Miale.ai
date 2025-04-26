@@ -6,7 +6,7 @@ const Logo: React.FC = () => {
       <img
         src="/lovable-uploads/Miale_AI-logo.png"
         alt="Miale AI Logo"
-        className="w-16 h-16" // Increased size
+        className="w-16 h-16" 
       />
       <div className="ml-4">
         <h1 className="text-2xl font-bold text-primary">Miale AI</h1>

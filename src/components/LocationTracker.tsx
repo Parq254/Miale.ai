@@ -9,7 +9,7 @@ type LocationData = {
   longitude: number;
   accuracy: number;
   timestamp: number;
-  address?: string; // Making address optional with ? since it might not always be available
+  address?: string; 
 };
 
 interface LocationTrackerProps {
@@ -38,13 +38,13 @@ const LocationTracker: React.FC<LocationTrackerProps> = ({ onLocationUpdate }) =
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        // Create newLocation with the optional address property explicitly included
+  
         const newLocation: LocationData = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           accuracy: position.coords.accuracy,
           timestamp: position.timestamp,
-          address: undefined // Initialize with undefined, will be updated if data is available
+          address: undefined 
         };
         
         // Try to get address from coordinates using reverse geocoding

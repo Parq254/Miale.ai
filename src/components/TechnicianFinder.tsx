@@ -65,7 +65,7 @@ const TechnicianFinder: React.FC<Props> = ({ latitude, longitude }) => {
         }
       ];
       
-      // Sort by distance
+      
       mockTechnicians.sort((a, b) => a.distance - b.distance);
       
       setTechnicians(mockTechnicians);

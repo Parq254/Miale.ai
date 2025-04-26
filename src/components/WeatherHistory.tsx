@@ -29,7 +29,7 @@ const WeatherHistory: React.FC<Props> = ({ latitude, longitude }) => {
     // For this demo, we'll generate mock data
     setIsLoading(true);
 
-    // Generate some realistic mock data based on selected period
+    // Mock data 
     const generateMockData = () => {
       const data: WeatherData[] = [];
       const now = new Date();
@@ -97,11 +97,11 @@ const WeatherHistory: React.FC<Props> = ({ latitude, longitude }) => {
       </div>
 
       {isLoading ? (
-        <div className="h-100 w-full flex items-center justify-center"> {/* Increased height */}
+        <div className="h-100 w-full flex items-center justify-center"> 
           <div className="text-muted-foreground">Loading weather data...</div>
         </div>
       ) : (
-        <div className="h-100 w-full"> {/* Increased height */}
+        <div className="h-100 w-full"> 
           <ChartContainer config={config}>
             <>
               <ResponsiveContainer width="100%" height="100%">

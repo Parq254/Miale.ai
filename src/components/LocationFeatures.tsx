@@ -18,8 +18,8 @@ const LocationFeatures: React.FC<LocationFeaturesProps> = ({ onLocationUpdate })
   };
 
   useEffect(() => {
-    const latitude = -1.286389; // Example latitude
-    const longitude = 36.817223; // Example longitude
+    const latitude = -1.286389; 
+    const longitude = 36.817223; 
     setLocation({ latitude, longitude });
     onLocationUpdate(latitude, longitude);
   }, [onLocationUpdate]);
