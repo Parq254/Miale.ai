@@ -63,9 +63,9 @@ const Index: React.FC = () => {
       <div className="container flex flex-col py-4">
         <Logo />
       </div>
-      <div className="container flex flex-col py-4">
+      {/* <div className="container flex flex-col py-4">
         <h1 className="text-3xl font-bold mb-6">Welcome to Miale AI</h1>
-      </div>
+      </div> */}
 
       {/* Chat Section */}
       <div className="container mb-6">
